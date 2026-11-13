@@ -94,12 +94,21 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(ScrollView(this).apply { addView(root) })
         askPermissions()
-        if (Prefs.isEnabled(this)) startWatch()
     }
 
     private fun startWatch() {
-        val svc = Intent(this, CallWatchService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(svc) else startService(svc)
+        try {
+            val svc = Intent(this, CallWatchService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(svc) else startService(svc)
+        } catch (t: Throwable) {
+            status.text = "Could not start call watching: " + (t.message ?: "unknown error")
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val missing = permissions.filterIndexed { i, _ -> grantResults.getOrNull(i) != PackageManager.PERMISSION_GRANTED }
+        if (missing.isEmpty() && Prefs.isEnabled(this)) startWatch()
     }
 
     private fun askPermissions() {
