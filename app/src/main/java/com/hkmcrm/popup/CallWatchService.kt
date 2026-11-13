@@ -60,6 +60,11 @@ class CallWatchService : Service() {
                             startedAt = System.currentTimeMillis()
                             seenNumber = incomingNumber ?: ""
                         }
+                        val hint = incomingNumber ?: ""
+                        if (hint.isNotBlank()) safe { incomingLookup(hint, false) }
+                        main.postDelayed({ outboundLookup() }, 1200)
+                        main.postDelayed({ outboundLookup() }, 4000)
+                        main.postDelayed({ outboundLookup() }, 8000)
                     }
                     TelephonyManager.CALL_STATE_IDLE -> {
                         if (calling) {
@@ -77,6 +82,16 @@ class CallWatchService : Service() {
 
     private fun safe(block: () -> Unit) {
         pool.execute { try { block() } catch (_: Throwable) {} }
+    }
+
+    private fun outboundLookup() {
+        if (!calling) return
+        if (!Prefs.isEnabled(this)) return
+        val entry = lastCallEntry() ?: return
+        if (entry.third != CallLog.Calls.OUTGOING_TYPE) return
+        val number = entry.first
+        if (number.isBlank()) return
+        safe { incomingLookup(number, false) }
     }
 
     private fun incomingLookup(number: String, incoming: Boolean) {
@@ -114,7 +129,7 @@ class CallWatchService : Service() {
             )
             if (cursor != null && cursor.moveToFirst()) {
                 val ageMs = System.currentTimeMillis() - cursor.getLong(3)
-                if (ageMs > 120000) return null
+                if (ageMs > 180000) return null
                 Triple(cursor.getString(0) ?: "", cursor.getInt(1), cursor.getInt(2))
             } else null
         } catch (t: Throwable) {
