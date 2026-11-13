@@ -66,7 +66,7 @@ class CallWatchService : Service() {
         tm.listen(l, PhoneStateListener.LISTEN_CALL_STATE)
     }
 
-    private inline fun safe(block: () -> Unit) {
+    private fun safe(block: () -> Unit) {
         pool.execute { try { block() } catch (_: Throwable) {} }
     }
 
