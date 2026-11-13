@@ -29,8 +29,17 @@ class CallWatchService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        startForeground(Notifier.FOREGROUND_ID, Notifier.foreground(this))
-        register()
+        try {
+            startForeground(Notifier.FOREGROUND_ID, Notifier.foreground(this))
+        } catch (t: Throwable) {
+            stopSelf()
+            return
+        }
+        try {
+            register()
+        } catch (t: Throwable) {
+            // keep the service alive even if the telephony hook is unavailable
+        }
     }
 
     @Suppress("DEPRECATION")
