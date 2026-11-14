@@ -38,11 +38,17 @@ object Notifier {
             context, 0, Intent(context, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
+        val voice = PendingIntent.getActivity(
+            context, 5,
+            Intent(Intent.ACTION_VIEW, android.net.Uri.parse(BuildConfig.APP_URL)),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
         return base(context)
             .setContentTitle("HKM CRM caller watch")
             .setContentText("Watching calls for donors and leads")
             .setOngoing(true)
             .setContentIntent(open)
+            .addAction(android.R.drawable.ic_btn_speak_now, "Say a command", voice)
             .build()
     }
 
