@@ -14,6 +14,7 @@ android {
         versionCode = 2
         versionName = "1.1"
         buildConfigField("String", "BASE_URL", "\"https://hari-seva-sync.base44.app/functions\"")
+        buildConfigField("String", "APP_URL", "\"https://hari-seva-sync.base44.app/voice\"")
     }
 
     buildTypes {
