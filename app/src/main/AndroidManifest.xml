@@ -35,6 +35,17 @@
                 android:value="Caller identification popup for the HKM CRM" />
         </service>
 
+        <service
+            android:name=".VoiceTileService"
+            android:exported="true"
+            android:label="CRM voice command"
+            android:icon="@android:drawable/ic_btn_speak_now"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
         <receiver
             android:name=".BootReceiver"
             android:enabled="true"
